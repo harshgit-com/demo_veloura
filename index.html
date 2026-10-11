@@ -8,7 +8,7 @@
 </style></head>
 <body>
 <div class="announcement">A LITTLE SELF-CARE, ON US — FREE SHIPPING OVER ₹999</div>
-<nav class="nav"><a class="logo" href="#home">veloura<span>.</span></a><div class="links" id="mainLinks"><a href="#shop">SHOP</a><a href="#ritual">OUR RITUAL</a><a href="#reviews">REVIEWS</a><button class="btn outline" onclick="openAuth('login')">LOG IN</button><button class="btn" onclick="openAuth('signup')">SIGN UP</button><button class="btn outline" onclick="openCart()">BAG (<span id="cartCount">0</span>)</button><a href="#admin" onclick="showAdmin(event)">ADMIN</a></div></nav>
+<nav class="nav"><a class="logo" href="#home">veloura<span>.</span></a><div class="links" id="mainLinks"><a href="#shop">SHOP</a><a href="#ritual">OUR RITUAL</a><a href="#reviews">REVIEWS</a><button class="btn outline" onclick="openAuth('login')">LOG IN</button><button class="btn" onclick="openAuth('signup')">SIGN UP</button><button class="btn outline" onclick="openCart()">BAG (<span id="cartCount">0</span>)</button></div></nav>
 <main id="storeView"><section class="hero" id="home"><div class="hero-copy"><div class="eyebrow">SKINCARE, WITHOUT THE NOISE</div><h1>Your skin.<br>Your kind of<br>glow.</h1><p>Thoughtful everyday essentials made to make your routine feel less like a task, and more like a tiny ritual.</p><button class="btn" onclick="document.querySelector('#shop').scrollIntoView({behavior:'smooth'})">SHOP THE COLLECTION ↗</button></div><div class="hero-art"><div class="sun"></div><div class="pedestal"></div><div class="bottle left"><b>veloura.</b><em>Daily Dew</em><small>HYDRATING TONER</small></div><div class="bottle"><b>veloura.</b><em>Cloud Cream</em><small>DAILY MOISTURISER</small></div><div class="bottle right"><b>veloura.</b><em>Soft Reset</em><small>GENTLE CLEANSER</small></div></div></section>
 <div class="benefits"><div><b>♡</b>Kind-to-skin formulas</div><div><b>✳</b>Made for everyday rituals</div><div><b>♧</b>Thoughtful ingredients</div></div>
 <section class="section" id="shop"><div class="sectionhead"><div class="eyebrow">YOUR NEW DAILY FAVOURITES</div><h2>The little luxuries</h2><p>Simple steps. Soft textures. A little time for you.</p></div><div class="products" id="productGrid"></div></section>
@@ -78,15 +78,8 @@ function showAdmin(e){if(e)e.preventDefault();if(!adminLoggedIn){let ok=confirm(
     if (id === 'productShade') document.body.style.overflow = '';
   };
 
-  window.showAdmin = function(event) {
-    if (event) event.preventDefault();
-    adminLoggedIn = true;
-    document.getElementById('storeView').classList.add('hidden');
-    document.getElementById('adminView').classList.remove('hidden');
-    document.querySelector('.footer').classList.add('hidden');
-    window.scrollTo({top: 0, behavior: 'smooth'});
-    adminTab('overview', document.querySelector('.admin-side button'));
-  };
+  // Admin navigation is intentionally not shown in the public storefront.
+  // The Firebase module below installs the UID-checked admin entry handler.
   window.showStore = function() {
     document.getElementById('adminView').classList.add('hidden');
     document.getElementById('storeView').classList.remove('hidden');
@@ -208,6 +201,13 @@ function showAdmin(e){if(e)e.preventDefault();if(!adminLoggedIn){let ok=confirm(
       loginButton.textContent = 'LOG IN';
     }
   });
+
+  // Owner entry point: visit yoursite/#owner, then sign in. No admin link is shown to shoppers.
+  function handleOwnerRoute() {
+    if (window.location.hash === '#owner') window.showAdmin();
+  }
+  window.addEventListener('hashchange', handleOwnerRoute);
+  if (window.location.hash === '#owner') setTimeout(handleOwnerRoute, 250);
 
   // Public catalogue read is optional until product documents are added.
   // If Firestore is empty, the designed sample products remain visible.
